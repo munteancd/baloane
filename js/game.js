@@ -171,6 +171,9 @@ function frame(now) {
 }
 
 async function start() {
+  // AudioContext creat sincron în gestul de click: după await-uri, WebKit
+  // l-ar putea porni suspendat (joc mut, fără nicio eroare).
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: 'user' },
@@ -183,7 +186,7 @@ async function start() {
     errorOverlay.classList.remove('hidden');
     return;
   }
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  audioCtx.resume();
   preloadClips();
   startOverlay.classList.add('hidden');
   resize();
