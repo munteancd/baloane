@@ -2,7 +2,7 @@ import { diffFrames, motionInRect } from './motion.js';
 import { createGame, spawnBalloon, update, checkPops, COLORS, ANIMALS } from './balloons.js';
 import { createVoiceQueue, playPop } from './audio.js';
 
-const DETECT_W = 160, DETECT_H = 120;
+const DETECT_W = 160;
 const MAX_BALLOONS = 4;
 const SPAWN_MS = 900;
 const ENCOURAGE_EVERY = 8;
@@ -20,8 +20,6 @@ video.playsInline = true;
 video.muted = true;
 
 const detect = document.createElement('canvas');
-detect.width = DETECT_W;
-detect.height = DETECT_H;
 const dctx = detect.getContext('2d', { willReadFrequently: true });
 
 const clips = new Map();
@@ -57,6 +55,12 @@ function preloadClips() {
 function resize() {
   canvas.width = innerWidth;
   canvas.height = innerHeight;
+  // Canvas-ul de detecție păstrează raportul de aspect al ecranului, ca
+  // ambele canvas-uri să decupeze identic imaginea camerei ("cover") și
+  // coordonatele normalizate să arate spre aceleași regiuni.
+  detect.width = DETECT_W;
+  detect.height = Math.max(1, Math.round(DETECT_W * innerHeight / innerWidth));
+  prevFrame = null; // dimensiunea s-a schimbat: bufferul vechi nu mai e comparabil
 }
 
 // Desenează video-ul oglindit, umplând complet suprafața (stil "cover").
@@ -75,8 +79,8 @@ function drawVideoMirrored(c, w, h) {
 }
 
 function detectMotion() {
-  drawVideoMirrored(dctx, DETECT_W, DETECT_H);
-  const frame = dctx.getImageData(0, 0, DETECT_W, DETECT_H).data;
+  drawVideoMirrored(dctx, detect.width, detect.height);
+  const frame = dctx.getImageData(0, 0, detect.width, detect.height).data;
   let motion = null;
   if (prevFrame) motion = diffFrames(prevFrame, frame);
   prevFrame = frame;
@@ -152,7 +156,7 @@ function frame(now) {
   if (motion) {
     const popped = checkPops(
       state,
-      (rect) => motionInRect(motion, DETECT_W, DETECT_H, rect),
+      (rect) => motionInRect(motion, detect.width, detect.height, rect),
       now,
       { sens: SENS },
     );
