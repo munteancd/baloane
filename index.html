@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baloane 🎈</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1d3557; }
+  #scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .overlay {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 16px;
+    background: linear-gradient(#1d3557, #457b9d); color: #fff;
+    font-family: system-ui, sans-serif; font-size: 20px; text-align: center;
+  }
+  #start-btn {
+    font-size: 72px; width: 160px; height: 160px; border-radius: 50%;
+    border: none; background: #e63946; color: #fff; cursor: pointer;
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="start" class="overlay">
+  <div style="font-size:64px">🎈</div>
+  <button id="start-btn">▶</button>
+</div>
+<div id="camera-error" class="overlay hidden">
+  <div style="font-size:64px">📷</div>
+  <p>Nu am acces la cameră.<br>Permite accesul din browser și reîncarcă pagina.</p>
+</div>
+<script type="module" src="js/game.js"></script>
+</body>
+</html>
